@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'DjangoRestApisPostgreSQL.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'rest',
+        'NAME': 'restapi',
         'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': '127.0.0.1',

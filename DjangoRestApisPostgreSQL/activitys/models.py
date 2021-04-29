@@ -1,14 +1,6 @@
 from django.db import models
 
-"""
-class Tutorial(models.Model):
-    title = models.CharField(max_length=70, blank=False, default='')
-    description = models.CharField(max_length=200, blank=False, default='')
-    published = models.BooleanField(default=False)
-"""
-
 class Activity(models.Model):
-    ide =  models.IntegerField()
     property_id = models.IntegerField()
     schedule = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
@@ -19,7 +11,6 @@ class Activity(models.Model):
 
 """
 class Property(models.Model):
-    ide = models.IntegerField()
     title = models.CharField(max_length=255)
     address = models.TextField()
     description = models.TextField()

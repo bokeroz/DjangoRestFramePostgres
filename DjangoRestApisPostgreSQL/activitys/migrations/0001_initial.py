@@ -10,20 +10,11 @@ class Migration(migrations.Migration):
     dependencies = [
     ]
 
-    operations = [        
-        migrations.CreateModel(
-            name='Tutorial',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(default='', max_length=70)),
-                ('description', models.CharField(default='', max_length=200)),
-                ('published', models.BooleanField(default=False)),
-            ]
-        ),         
+    operations = [       
         migrations.CreateModel(
             name='Activity',
             fields=[
-                ('property_id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('property_id', models.IntegerField(primary_key = True)),
                 ('schedule', models.DateTimeField()),
                 ('title', models.CharField(default='', max_length=255)),
                 ('create_at', models.DateTimeField()),
@@ -34,7 +25,6 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Property',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(default='', max_length=255)),
                 ('address', models.TextField()),
                 ('description', models.TextField()),
@@ -47,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Survey',
             fields=[
-                ('activity_id', models.IntegerField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('activity_id', models.IntegerField(primary_key = True)),
                 ('answers', models.TextField()),
                 ('create_at', models.DateTimeField()),                
             ]
