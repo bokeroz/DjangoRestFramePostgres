@@ -1,31 +1,17 @@
 from rest_framework import serializers 
-from activitys.models import Activity
-"""
-class TutorialSerializer(serializers.ModelSerializer):
- 
-    class Meta:
-        model = Tutorial
-        fields = ('id',
-                  'title',
-                  'description',
-                  'published')
-"""
+from activitys.models import Activity, Property, Survey
+
+class PropertySerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Property
+		fields = ['title', 'address', 'description', 'create_at', 'update_at', 'disabled_at', 'status']
 
 class ActivitySerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Activity
-		fields = '__all__'
-
-"""
-class PropertySerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Property
-		fields = '__all__'
-
-
+		fields = ['property_id','schedule', 'title', 'create_at', 'update_at', 'status']
 
 class SurveySerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Survey
-		fields = '__all__'
-"""
+		fields = ['activity_id', 'answers', 'create_at']

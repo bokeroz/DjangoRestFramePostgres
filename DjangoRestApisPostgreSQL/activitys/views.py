@@ -1,78 +1,112 @@
 from django.shortcuts import render
-
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
- 
-from .models import Activity
-from .serializers import ActivitySerializer
+from .models import Activity, Property, Survey
+from .serializers import ActivitySerializer, PropertySerializer, SurveySerializer
 from rest_framework.decorators import api_view
+import json
+from datetime import date
 
-"""
-@api_view(['GET', 'POST', 'DELETE'])
-def tutorial_list(request):
-    if request.method == 'GET':
-        tutorials = Tutorial.objects.all()
-        
-        title = request.GET.get('title', None)
-        if title is not None:
-            tutorials = tutorials.filter(title__icontains=title)
-        
-        tutorials_serializer = TutorialSerializer(tutorials, many=True)
-        return JsonResponse(tutorials_serializer.data, safe=False)
-        # 'safe=False' for objects serialization
- 
-    elif request.method == 'POST':
-        tutorial_data = JSONParser().parse(request)
-        tutorial_serializer = TutorialSerializer(data=tutorial_data)
-        if tutorial_serializer.is_valid():
-            tutorial_serializer.save()
-            return JsonResponse(tutorial_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    elif request.method == 'DELETE':
-        count = Tutorial.objects.all().delete()
-        return JsonResponse({'message': '{} Tutorials were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
- 
- 
-@api_view(['GET', 'PUT', 'DELETE'])
-def tutorial_detail(request, pk):
-    try: 
-        tutorial = Tutorial.objects.get(pk=pk) 
-    except Tutorial.DoesNotExist: 
-        return JsonResponse({'message': 'The tutorial does not exist'}, status=status.HTTP_404_NOT_FOUND) 
- 
-    if request.method == 'GET': 
-        tutorial_serializer = TutorialSerializer(tutorial) 
-        return JsonResponse(tutorial_serializer.data) 
- 
-    elif request.method == 'PUT': 
-        tutorial_data = JSONParser().parse(request) 
-        tutorial_serializer = TutorialSerializer(tutorial, data=tutorial_data) 
-        if tutorial_serializer.is_valid(): 
-            tutorial_serializer.save() 
-            return JsonResponse(tutorial_serializer.data) 
-        return JsonResponse(tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
- 
-    elif request.method == 'DELETE': 
-        tutorial.delete() 
-        return JsonResponse({'message': 'Tutorial was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
-    
-        
-@api_view(['GET'])
-def tutorial_list_published(request):
-    tutorials = Tutorial.objects.filter(published=True)
-        
-    if request.method == 'GET': 
-        tutorials_serializer = TutorialSerializer(tutorials, many=True)
-        return JsonResponse(tutorials_serializer.data, safe=False)
+# Create your views here.
+@api_view(["GET"])
+def welcome(request):
+  content = { 'message': 'Welcome Activitys App!' }
+  return JsonResponse(content, status=200)
 
-"""
-
-#############################################################
-@api_view(['GET'])
+@api_view(["GET"])
 def list_activitys(request):
-    activity = Activity.objects.filter()        
-    if request.method == 'GET': 
-        activity_serializer = ActivitySerializer(activity, many=True)
-        return JsonResponse(activity_serializer.data, safe=False)        
+  propertys = Property.objects.filter()
+  serializer = PropertySerializer(propertys, many=True)
+  return JsonResponse({'Activitys': serializer.data}, safe=False, status=status.HTTP_200_OK)
+
+@api_view(["POST"])
+def create_activitys(request):
+  payload = json.loads(request.body)  
+  
+  act = Property.objects.filter(schedule=payload["schedule"])
+  if( act.count() > 1):
+    return JsonResponse({'activity': "Ya esta registrada la fecha"}, safe=False, status=status.HTTP_200_OK)
+
+  propertyc = Property.objects.create(
+    title = payload["title"],
+    address = payload["address"],    
+    description = payload["description"],
+    schedule = payload["schedule"],
+    create_at = date.today(),
+    update_at = date.today(),
+    disabled_at = date.today(),
+    status = payload["status"],
+  )
+  serializerproperty= PropertySerializer(propertyc)
+  """
+  activity = Activity.objects.create(
+    property_id = propertyc.id,
+    schedule = payload["schedule"],    
+    title = payload["title"],
+    create_at = date.today(),
+    update_at = date.today(),
+    status = payload["status"],
+  )
+  serializeractivity = ActivitySerializer(activity)
+
+  
+  survey = Survey.objects.create(
+    activity_id = serializeractivity.id,
+    answers = payload["answers"],    
+    create_at = date.today()
+  )
+  serializersurvey = SurveySerializer(survey)
+  """
+  return JsonResponse({'Activity': serializerproperty.data}, safe=False, status=status.HTTP_201_CREATED)
+
+@api_view(["PUT"])
+def update_activitys(request, activity_id):
+  payload = json.loads(request.body)
+  try:
+    property_item = Property.objects.filter(id=activity_id)      
+    
+    property_item.update(
+      title = payload["title"],
+      address = payload["address"],    
+      description = payload["description"],
+      schedule = payload["schedule"],    
+      update_at = date.today(),
+      disabled_at = date.today(),
+      status = payload["status"],
+    )
+    propertys = Property.objects.get(id=activity_id)
+    serializer = PropertySerializer(propertys)    
+    """
+    activity_item = Activity.objects.filter(id=property_id)   
+    activity = Activity.objects.update(
+      property_id = propertyc.id,
+      schedule = payload["schedule"],    
+      title = payload["title"],
+      create_at = date.today(),
+      update_at = date.today(),
+      status = payload["status"],
+    )
+    serializeractivity = ActivitySerializer(activity)
+    survey_item = Survey.objects.filter(id=property_id)   
+    survey = Survey.objects.create(
+      activity_id = survey_item.id,
+      answers = payload["answers"],    
+      create_at = date.today()
+    )
+    serializersurvey = SurveySerializer(survey)
+    """
+    return JsonResponse({'activity': serializer.data}, safe=False, status=status.HTTP_200_OK)
+  except Exception:
+    return JsonResponse({'error': 'Something terrible went wrong'}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(["DELETE"])
+def delete_activitys(request, activity_id):  
+  try:
+    property_item = Property.objects.filter(id=activity_id)      
+    if(property_item.count() = 0):
+      return JsonResponse({'activity': 'dont found'}, safe=False, status=status.HTTP_200_OK)
+    property_item.delete()    
+    return JsonResponse({'delete activity': 'ok'}, safe=False, status=status.HTTP_200_OK)
+  except Exception:
+    return JsonResponse({'error': 'Something went wrong'}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

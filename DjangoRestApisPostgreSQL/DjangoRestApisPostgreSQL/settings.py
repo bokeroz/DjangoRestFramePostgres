@@ -36,10 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # Django REST framework 
-    'rest_framework',
-    # Tutorials application 
+    'django.contrib.staticfiles',    
+    'rest_framework',    
     'activitys.apps.ActivitysConfig',
     # CORS
     'corsheaders',
@@ -89,7 +87,7 @@ WSGI_APPLICATION = 'DjangoRestApisPostgreSQL.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'restapi',
+        'NAME': 'rest09',
         'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': '127.0.0.1',
